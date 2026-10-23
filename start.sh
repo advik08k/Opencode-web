@@ -34,4 +34,8 @@ else
 fi
 
 cd "$WORK"
-exec ttyd -p "${PORT:-10000}" -W -t fontSize=16 -c "${TERM_USER}:${TERM_PASS}" bash
+export TERM=xterm-256color
+export COLORTERM=truecolor
+exec ttyd -p "${PORT:-10000}" -W -P 20 \
+  -t rendererType=dom -t fontSize=15 -t disableLeaveAlert=true \
+  -c "${TERM_USER}:${TERM_PASS}" bash
