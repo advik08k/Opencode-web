@@ -1,6 +1,9 @@
 #!/bin/bash
-# Env vars needed: TERM_USER, TERM_PASS
-# Optional (GitHub storage): GH_TOKEN, GH_REPO (like username/repo)
+# Env vars:
+#   TERM_USER, TERM_PASS   login (required)
+#   MODE                   "web" (default, mobile UI) or "terminal" (plain bash)
+#   GH_TOKEN, GH_REPO      optional GitHub storage (GH_REPO like username/repo)
+#   + your model API key if you want (or use /connect inside OpenCode)
 
 if [ -z "$TERM_USER" ] || [ -z "$TERM_PASS" ]; then
   echo "Set TERM_USER and TERM_PASS env vars. Exiting."
@@ -13,7 +16,6 @@ git config --global user.name "render-bot"
 
 if [ -n "$GH_TOKEN" ] && [ -n "$GH_REPO" ]; then
   if git clone "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}.git" "$WORK"; then
-    # auto-save to GitHub every 2 minutes
     (
       while true; do
         sleep 120
@@ -36,6 +38,13 @@ fi
 cd "$WORK"
 export TERM=xterm-256color
 export COLORTERM=truecolor
-exec ttyd -p "${PORT:-10000}" -W -P 20 \
-  -t rendererType=dom -t fontSize=15 -t disableLeaveAlert=true \
-  -c "${TERM_USER}:${TERM_PASS}" bash
+
+if [ "${MODE:-web}" = "terminal" ]; then
+  exec ttyd -p "${PORT:-10000}" -W -P 20 \
+    -t rendererType=dom -t fontSize=15 -t disableLeaveAlert=true \
+    -c "${TERM_USER}:${TERM_PASS}" bash
+else
+  export OPENCODE_SERVER_USERNAME="$TERM_USER"
+  export OPENCODE_SERVER_PASSWORD="$TERM_PASS"
+  exec opencode web --hostname 0.0.0.0 --port "${PORT:-10000}"
+fi
