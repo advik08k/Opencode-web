@@ -40,9 +40,9 @@ export TERM=xterm-256color
 export COLORTERM=truecolor
 
 if [ "${MODE:-web}" = "terminal" ]; then
-  exec ttyd -p "${PORT:-10000}" -W -P 20 \
+  exec ttyd -p "${PORT:-10000}" -W -P 15 -r 3 \
     -t rendererType=dom -t fontSize=15 -t disableLeaveAlert=true \
-    -c "${TERM_USER}:${TERM_PASS}" bash
+    -c "${TERM_USER}:${TERM_PASS}" tmux new-session -A -s main
 else
   export OPENCODE_SERVER_USERNAME="$TERM_USER"
   export OPENCODE_SERVER_PASSWORD="$TERM_PASS"
