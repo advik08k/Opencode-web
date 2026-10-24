@@ -51,7 +51,7 @@ else
 fi
 WRAP
   chmod +x /root/shell.sh
-  exec ttyd -p "${PORT:-10000}" -W -P 15 -r 3 \
+  exec ttyd -p "${PORT:-10000}" -W -P 15 \
     -t rendererType=dom -t fontSize=15 -t disableLeaveAlert=true \
     -c "${TERM_USER}:${TERM_PASS}" /bin/bash /root/shell.sh
 else
